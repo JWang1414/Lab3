@@ -15,6 +15,7 @@ import org.json.JSONObject;
 public class JSONTranslationExample {
 
     public static final int CANADA_INDEX = 30;
+    public static final int TURKEY_INDEX = 177;
     private final JSONArray jsonArray;
 
     // Note: CheckStyle is configured so that we are allowed to omit javadoc for constructors
@@ -41,9 +42,15 @@ public class JSONTranslationExample {
         JSONObject canada = jsonArray.getJSONObject(CANADA_INDEX);
         return canada.getString("es");
     }
+    /**
+     * Returns the French translation of Turkey.
+     * @return the French translation of Turkey
+     */
 
-    // TODO Task: Complete the method below to generalize the above to get the country name
-    //            for any country code and language code from sample.json.
+    public String getTurkeyCountryNameFrenchTranslation() {
+        JSONObject turkey = jsonArray.getJSONObject(TURKEY_INDEX);
+        return turkey.getString("fr");
+    }
 
     /**
      * Returns the name of the country based on the provided country and language codes.
@@ -72,5 +79,7 @@ public class JSONTranslationExample {
         System.out.println(jsonTranslationExample.getCanadaCountryNameSpanishTranslation());
         String translation = jsonTranslationExample.getCountryNameTranslation("sau", "es");
         System.out.println(translation);
+        System.out.println(jsonTranslationExample.getTurkeyCountryNameFrenchTranslation());
+
     }
 }
