@@ -7,13 +7,15 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * This class provides the service of converting country codes to their names.
  */
 public class CountryCodeConverter {
 
+    private static final int EXPECTED_PARTS = 4;
+    private static final int COUNTRY_INDEX = 0;
+    private static final int ALPHA3_INDEX = 2;
     private final Map<String, String> countryCodeMap;
     private final Map<String, String> countryNameMap;
 
@@ -33,19 +35,16 @@ public class CountryCodeConverter {
      */
     public CountryCodeConverter(String filename) {
         try {
-            List<String> lines = Files.readAllLines(Paths.get(Objects.requireNonNull(getClass()
-                    .getClassLoader().getResource(filename)).toURI()));
-
+            List<String> lines = Files.readAllLines(Paths.get(getClass()
+                    .getClassLoader().getResource(filename).toURI()));
             countryCodeMap = new HashMap<>();
             countryNameMap = new HashMap<>();
-            for (String line : lines) {
-                String[] parts = line.split(",");
-                if (parts.length == 2) {
-                    String code = parts[0].trim();
-                    String name = parts[1].trim();
-                    countryCodeMap.put(code, name);
-                    countryNameMap.put(name, code);
-                }
+            for (String line : lines.subList(1, lines.size())) {
+                String[] parts = line.split("\t", -1);
+                String name = parts[COUNTRY_INDEX];
+                String alpha3 = parts[ALPHA3_INDEX].toLowerCase();
+                countryCodeMap.put(alpha3, name);
+                countryNameMap.put(name, alpha3);
             }
         }
         catch (IOException | URISyntaxException ex) {
@@ -60,7 +59,7 @@ public class CountryCodeConverter {
      * @return the name of the country corresponding to the code
      */
     public String fromCountryCode(String code) {
-        return countryCodeMap.getOrDefault(code, null);
+        return countryCodeMap.get(code);
     }
 
     /**
