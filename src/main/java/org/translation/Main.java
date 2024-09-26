@@ -1,8 +1,8 @@
 package org.translation;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 /**
  * Main class for this program.
@@ -15,9 +15,8 @@ import java.util.Scanner;
  */
 public class Main {
 
-    public static final String QUIT = "quit";
-    private static final LanguageCodeConverter LANGUAGE_CONVERTER = new LanguageCodeConverter();
-    private static final CountryCodeConverter COUNTRY_CONVERTER = new CountryCodeConverter();
+    private static final CountryCodeConverter COUNTRY_CODE_CONVERTER = new CountryCodeConverter();
+    private static final LanguageCodeConverter LANGUAGE_CODE_CONVERTER = new LanguageCodeConverter();
 
     /**
      * This is the main entry point of our Translation System!<br/>
@@ -25,6 +24,7 @@ public class Main {
      * @param args not used by the program
      */
     public static void main(String[] args) {
+
         Translator translator = new JSONTranslator("sample.json");
         // Translator translator = new InLabByHandTranslator();
 
@@ -38,23 +38,25 @@ public class Main {
      * @param translator the Translator implementation to use in the program
      */
     public static void runProgram(Translator translator) {
+        final String quit = "quit";
         while (true) {
             String country = promptForCountry(translator);
-            if (QUIT.equals(country)) {
+            if (country.equals(quit)) {
                 break;
             }
-            country = COUNTRY_CONVERTER.fromCountry(country);
-            String language = promptForLanguage(translator, country);
-            if (QUIT.equals(language)) {
+            String countryCode = COUNTRY_CODE_CONVERTER.fromCountry(country);
+            String language = promptForLanguage(translator, countryCode);
+            if (language.equals(quit)) {
                 break;
             }
-            language = LANGUAGE_CONVERTER.fromLanguage(language);
-            System.out.println(country + " in " + language + " is " + translator.translate(country, language));
+
+            String lcode = LANGUAGE_CODE_CONVERTER.fromLanguage(language);
+            System.out.println(country + " in " + language + " is " + translator.translate(countryCode, lcode));
             System.out.println("Press enter to continue or quit to exit.");
             Scanner s = new Scanner(System.in);
             String textTyped = s.nextLine();
 
-            if (QUIT.equals(textTyped)) {
+            if (quit.equals(textTyped)) {
                 break;
             }
         }
@@ -63,27 +65,34 @@ public class Main {
     // Note: CheckStyle is configured so that we don't need javadoc for private methods
     private static String promptForCountry(Translator translator) {
         List<String> countries = translator.getCountries();
-        countries.replaceAll(COUNTRY_CONVERTER::fromCountryCode);
-        Collections.sort(countries);
-        for (String country : countries) {
+
+        List<String> countryNames = countries.stream()
+                .map(COUNTRY_CODE_CONVERTER::fromCountryCode)
+                .sorted()
+                .collect(Collectors.toList());
+
+        for (String country : countryNames) {
             System.out.println(country);
         }
         System.out.println("select a country from above:");
         Scanner s = new Scanner(System.in);
         return s.nextLine();
+
     }
 
     // Note: CheckStyle is configured so that we don't need javadoc for private methods
     private static String promptForLanguage(Translator translator, String country) {
         List<String> languages = translator.getCountryLanguages(country);
-        languages.replaceAll(LANGUAGE_CONVERTER::fromLanguageCode);
-        Collections.sort(languages);
-        for (String language : languages) {
+
+        List<String> languageNames = languages.stream()
+                .map(LANGUAGE_CODE_CONVERTER::fromLanguageCode)
+                .sorted()
+                .collect(Collectors.toList());
+
+        for (String language : languageNames) {
             System.out.println(language);
         }
-
         System.out.println("select a language from above:");
-
         Scanner s = new Scanner(System.in);
         return s.nextLine();
     }
