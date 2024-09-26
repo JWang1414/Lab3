@@ -33,6 +33,7 @@ public class LanguageCodeConverter {
 
     /**
      * Overloaded constructor which allows us to specify the filename to load the language code data from.
+     *
      * @param filename the name of the file in the resources folder to load the data from
      * @throws RuntimeException if the resource file can't be loaded properly
      */
@@ -110,16 +111,44 @@ public class LanguageCodeConverter {
      * @return the 2-letter code of the language
      */
     public String fromLanguage(String language) {
-        // TODO Task: update this code to use your instance variable to return the correct value
-        return language;
-    }
+        String result = language;
 
+        // Check if the language is in the Alpha-2 map
+        if (alpha2CodeMap.containsValue(language)) {
+            for (Map.Entry<String, String> entry : alpha2CodeMap.entrySet()) {
+                if (entry.getValue().equals(language)) {
+                    result = entry.getKey();
+                    break;
+                }
+            }
+        }
+
+        else if (alpha3CodeMap.containsValue(language)) {
+            for (Map.Entry<String, String> entry : alpha3CodeMap.entrySet()) {
+                if (entry.getValue().equals(language)) {
+                    result = entry.getKey();
+                    break;
+                }
+            }
+        }
+
+        else if (numericCodeMap.containsValue(language)) {
+            for (Map.Entry<String, String> entry : numericCodeMap.entrySet()) {
+                if (entry.getValue().equals(language)) {
+                    result = entry.getKey();
+                    break;
+                }
+            }
+        }
+        return result;
+    }
     /**
      * Returns how many languages are included in this code converter.
      * @return how many languages are included in this code converter.
      */
+
     public int getNumLanguages() {
-        // TODO Task: update this code to use your instance variable to return the correct value
-        return 0;
+        return alpha2CodeMap.size() + alpha3CodeMap.size() + numericCodeMap.size();
     }
 }
+
